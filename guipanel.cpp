@@ -1,4 +1,3 @@
-
 #include "guipanel.h"
 #include "ui_guipanel.h"
 #include <QSerialPort>     // Comunicacion por el puerto serie
@@ -130,57 +129,22 @@ void GUIPanel::readRequest()
 
                         // Falta por implementar la recepcion de mas tipos de mensajes
                         // habria que decodificarlos y emitir las señales correspondientes con los parametros que correspondan
-
-                        /*case MENSAJE_CONTADOR:
+                    case MENSAJE_PRODUCTO:
                     {
-                        PARAM_CONTADOR parametro;
 
-                        // Extraemos el parámetro de la trama y comprobamos el tamaño [cite: 162, 238]
-                        if (check_and_extract_message_param(ptrtoparam, tam, sizeof(parametro), &parametro) > 0)
-                        {
-                            // Actualizamos el contador (ej. un QLCDNumber o QSpinBox)
-                            ui->counter->setValue((int)parametro.contador);
+                        PARAM_MENSAJE_PRODUCTO parametro;
 
-                            // Actualizamos el estado del LED utilizando setChecked
-                            // Se establece a 'true' si estadoLed es distinto de 0
-                            ui->led->setChecked(parametro.estadoLed != 0);
-
-                            ui->statusLabel->setText(tr("Datos de fábrica actualizados."));
-                        }
-                        else
-                        {
-                            ui->statusLabel->setText(tr("Error: Tamaño de parámetro incorrecto."));
-                        }
-                    }
-                    break;*/
-
-                    case MENSAJE_CONTADOR:
-                    {
-                        PARAM_CONTADOR parametro;
-
-                        if (check_and_extract_message_param(ptrtoparam, tam, sizeof(parametro), &parametro) > 0)
+                        if (check_and_extract_message_param(ptrtoparam,
+                                                            tam,
+                                                            sizeof(parametro),
+                                                            &parametro) > 0)
                         {
 
-                            ui->counter->setValue((int)parametro.contador);
-
-                            ui->lcdNumber->display((int)parametro.kit_id);
-
+                            ui->counter->setValue((int)parametro.totalProductos);
                             ui->led->setChecked(!ui->led->isChecked());
-
-                            ui->statusLabel->setText(
-                                tr("Kit %1 Prod %2 Cont %3")
-                                    .arg(parametro.kit_id)
-                                    .arg(parametro.IDProd)
-                                    .arg(parametro.contador));
-                            ui->lcdProd->display((int)parametro.IDProd);
-                        }
-                        else
-                        {
-                            ui->statusLabel->setText(tr("Error: Tamaño de mensaje incorrecto"));
                         }
                     }
                     break;
-
                     default:
                         // Este error lo notifico mediante la señal statusChanged
                         LastError = QString("Status: Recibido paquete inesperado");
@@ -348,33 +312,4 @@ void GUIPanel::pingResponseReceived()
     ventanaPopUp.setStyleSheet("background-color: lightgrey");
     ventanaPopUp.setModal(true);
     ventanaPopUp.show();
-}
-
-void GUIPanel::on_pushButton_clicked()
-{
-    uint8_t paquete[MAX_FRAME_SIZE];
-    int size;
-
-    if (fConnected)
-    {
-        size = create_frame(paquete,
-                            MENSAJE_INICIO,
-                            nullptr,
-                            0,
-                            MAX_FRAME_SIZE);
-
-        if (size > 0)
-        {
-            serial.write((const char *)paquete, size);
-            ui->statusLabel->setText("Inicio enviado a TIVA");
-        }
-        else
-        {
-            ui->statusLabel->setText("Error creando mensaje");
-        }
-    }
-    else
-    {
-        ui->statusLabel->setText("No conectado");
-    }
 }
