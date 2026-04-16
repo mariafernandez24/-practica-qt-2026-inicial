@@ -24,7 +24,6 @@ private slots:
     void on_pingButton_clicked();
     void on_runButton_clicked();
     void on_statusButton_clicked();
-
     void on_pushButton_clicked();
 
 private: // funciones privadas

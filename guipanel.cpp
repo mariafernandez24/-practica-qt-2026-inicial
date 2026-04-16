@@ -134,14 +134,20 @@ void GUIPanel::readRequest()
 
                         PARAM_MENSAJE_PRODUCTO parametro;
 
-                        if (check_and_extract_message_param(ptrtoparam,
-                                                            tam,
-                                                            sizeof(parametro),
-                                                            &parametro) > 0)
+                        if (check_and_extract_message_param(ptrtoparam, tam, sizeof(parametro), &parametro) > 0)
                         {
 
                             ui->counter->setValue((int)parametro.totalProductos);
+
+                            ui->lcdNumber->display((int)parametro.kit_id);
+
                             ui->led->setChecked(!ui->led->isChecked());
+
+                            ui->lcdProd->display((int)parametro.IDProd);
+                        }
+                        else
+                        {
+                            ui->statusLabel->setText(tr("Error: Tamaño de mensaje incorrecto"));
                         }
                     }
                     break;
@@ -312,4 +318,35 @@ void GUIPanel::pingResponseReceived()
     ventanaPopUp.setStyleSheet("background-color: lightgrey");
     ventanaPopUp.setModal(true);
     ventanaPopUp.show();
+}
+
+void GUIPanel::on_pushButton_clicked()
+{
+
+    qDebug() << "Botón START pulsado";
+    uint8_t paquete[MAX_FRAME_SIZE];
+    int size;
+
+    if (fConnected)
+    {
+        size = create_frame(paquete,
+                            MENSAJE_START_BIT,
+                            nullptr,
+                            0,
+                            MAX_FRAME_SIZE);
+
+        if (size > 0)
+        {
+            serial.write((const char *)paquete, size);
+            ui->statusLabel->setText("Inicio enviado a TIVA");
+        }
+        else
+        {
+            ui->statusLabel->setText("Error creando mensaje");
+        }
+    }
+    else
+    {
+        ui->statusLabel->setText("No conectado");
+    }
 }
