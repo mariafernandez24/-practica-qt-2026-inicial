@@ -41,7 +41,7 @@ GUIPanel::GUIPanel(QWidget *parent) : // Constructor de la clase
     // puerto serie.El envío de readyRead por parte de "serial" es automatico, sin necesidad de instrucciones
     // del programador
     connect(&serial, SIGNAL(readyRead()), this, SLOT(readRequest()));
-
+    ui->pushButton->setEnabled(false);
     ui->pingButton->setEnabled(false); // Se deshabilita el botón de ping del interfaz gráfico, hasta que
     // se haya establecido conexión
 
@@ -143,7 +143,14 @@ void GUIPanel::readRequest()
 
                             ui->led->setChecked(!ui->led->isChecked());
 
-                            ui->lcdProd->display((int)parametro.IDProd);
+                            if (parametro.IDProd == 1)
+                            {
+                                ui->lcdProd1->display((int)parametro.kit_id);
+                            }
+                            else if (parametro.IDProd == 2)
+                            {
+                                ui->lcdProd2->display((int)parametro.kit_id);
+                            }
                         }
                         else
                         {
@@ -151,7 +158,8 @@ void GUIPanel::readRequest()
                         }
                     }
                     break;
-                    default:
+
+                                    default:
                         // Este error lo notifico mediante la señal statusChanged
                         LastError = QString("Status: Recibido paquete inesperado");
                         ui->statusLabel->setText(tr("  Recibido paquete inesperado,"));
@@ -248,6 +256,7 @@ void GUIPanel::startSlave()
 
     // Y se habilitan los controles
     ui->pingButton->setEnabled(true);
+    ui->pushButton->setEnabled(true);
 
     // Variable indicadora de conexión a TRUE, para que se permita enviar mensajes en respuesta
     // a eventos del interfaz gráfico
@@ -339,6 +348,7 @@ void GUIPanel::on_pushButton_clicked()
         {
             serial.write((const char *)paquete, size);
             ui->statusLabel->setText("Inicio enviado a TIVA");
+            ui->pushButton->setEnabled(false);
         }
         else
         {
