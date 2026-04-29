@@ -159,7 +159,22 @@ void GUIPanel::readRequest()
                     }
                     break;
 
-                                    default:
+                    /*case MENSAJE_TEMPERATURA:
+                    {
+                        PARAM_TEMPERATURA parametro;
+
+                        if (check_and_extract_message_param(ptrtoparam, tam, sizeof(parametro), &parametro) > 0)
+                        {
+                            ui->lcdAmb->display(parametro.temp_ambiente);
+                            ui->lcdSold->display(parametro.temp_soldadura);
+                        }
+                        else
+                        {
+                            ui->statusLabel->setText("Error en mensaje temperatura");
+                        }
+                    }
+                    break;*/
+                    default:
                         // Este error lo notifico mediante la señal statusChanged
                         LastError = QString("Status: Recibido paquete inesperado");
                         ui->statusLabel->setText(tr("  Recibido paquete inesperado,"));
